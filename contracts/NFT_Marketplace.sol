@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC1155/extensions/ERC1155Supply.sol";
 
-contract MyToken is ERC1155, Ownable, ERC1155Supply {
+contract FanaTick is ERC1155, Ownable, ERC1155Supply {
     struct Event {
         uint256 timestamp;
         uint256 rem_seats;
@@ -25,7 +25,7 @@ contract MyToken is ERC1155, Ownable, ERC1155Supply {
     event POIUpdated(address indexed player, uint256 newScore);
     constructor(address initialOwner) ERC1155("") Ownable(initialOwner)
     {
-        // Siuuuuu
+        contractAddress = initialOwner;
     }
 
     function incrementScore(uint256 _incrementBy,address _sender,string memory artist) external {

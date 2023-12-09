@@ -1,24 +1,34 @@
 const express = require("express");
 require('dotenv').config();
-var cookieParser = require('cookie-parser')
-const { restrictToLoggedinUserOnly, checkAuth } = require("./middlewares/auth");
+const { connectToMongoDB } = require("./connection");
 const cors = require('cors');
 
-const resourceRoute = require("./routes/resource");
-const userRoute = require("./routes/user");
+const eventsRoute = require("./routes/events");
 
 const app = express();
 const PORT = 8000;
-
-connectToMongoDB(process.env.MONGODB ?? "mongodb://localhost:27017/resourcesharing").then(() =>
-  console.log("Mongodb connected")
-);
+const dbConnected = false;
+connectToMongoDB('mongodb+srv://fanaticks:fanaticks@cluster0.4umhp0j.mongodb.net/').then(() =>
+    console.log("Mongodb connected")
+)
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
 
-app.use("/resource", restrictToLoggedinUserOnly, resourceRoute);
-app.use("/user", userRoute);
-// app.use("/", checkAuth, staticRoute);
+
+app.use("/events", eventsRoute);
+
+
+app.get('/getEvents', async (req, res) => {
+    try {
+        const eventCollection = await connectToDatabase();
+
+        const result = await eventCollection.find().toArray();
+
+        res.status(200).json(result);
+    } catch (error) {
+        console.error('Error getting events:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+});
 app.listen(PORT, () => console.log(`Server Started at PORT:${PORT}`));
